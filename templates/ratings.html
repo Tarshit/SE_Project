@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Add custom CSS for the header */
+        header {
+            background-color: #e5e7d1; /* Set the background color to match the buttons' color in the home page */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px;
+            max-width: 100%; /* Set a maximum width to avoid overflow */
+            white-space: nowrap; /* Prevent text from wrapping to the next line */
+            overflow: visible;
+            position: relative; /* Add relative positioning */
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 80px; /* Adjust the width as needed */
+            margin-right: 20px; /* Add margin between the logo and tabs */
+        }
+
+        .tabs {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        .tabs li {
+            margin: 0;
+            padding: 0;
+            text-align: center; /* Center-align items */
+            flex: 1; /* Distribute space equally among the items */
+            white-space: nowrap; /* Prevent text from wrapping */
+        }
+
+        .tabs a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold; /* Make the items bold */
+            font-size: 18px; /* Increase text size to 18px */
+            padding: 15px; /* Add 15px of padding to each item */
+            white-space: nowrap; /* Prevent text from wrapping */
+            transition: background-color 0.3s; /* Add hover effect */
+            display: block; /* Ensure the entire area is clickable */
+            position: relative; /* Add relative positioning */
+        }
+
+        .tabs a:hover {
+            background-color: #c0c2a7; /* Change background color on hover */
+        }
+
+        .dropdown {
+            display: inline-block;
+            position: relative;
+            z-index: +1; /* Ensure the dropdown is above the content */
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            text-align: left; /* Align dropdown content to the left */
+            top: 100%; /* Position below the dropdown item */
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .header-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1;
+            overflow: visible; /* Set overflow to visible */
+        }
+
+        body {
+            background-color: #a7bcad; /* Set the background color to match the home page */
+            padding-top: 80px; /* Adjust padding to account for the header height */
+            overflow-x: hidden; /* Hide horizontal scrollbar */
+        }
+
+        .page-container {
+            padding: 20px; /* Add padding to separate content from the header */
+            z-index: -1;
+        }
+
+        #file-content {
+            background-color: #a7bcad; /* Set content background color to match the home page */
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center; /* Center-align the content */
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <header>
+            <div class="logo-container">
+                <img src="static/logo.png" alt="Your Logo" class="logo">
+            </div>
+            <ul class="tabs">
+                <li class="dropdown">
+                    <a href="#classify">Classify</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('reviews') }}">Based on Reviews</a>
+                        <a href="{{ url_for('ratings')}}">Based on Ratings</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="#visualise">Visualise</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('barchart')}}">Bar Chart</a>
+                        <a href="{{ url_for('piechart')}}">Pie Chart</a>
+                    </div>
+                </li>
+                <li><a href="#compare">Compare</a></li>
+                <li><a href="#product-feedback">Product Feedback</a></li>
+                <li><a href="#feedback">Feedback</a></li>
+                <li><a href="{{ url_for('download_report') }}" target="_blank">Download</a></li>
+            </ul>
+        </header>
+    </div>
+    <div class="page-container">
+        <h1 style="font-size: 24px; font-weight: bold;"></h1>
+        <h1 style="font-size: 40px; font-weight: bold;justify-content: center;">results of classification based on Ratings are as follows</h1>
+        <!-- Empty body content for reviews.html -->
+        <p style="font-size: 32px;justify-content: center;"> 
+            <i>Total number of reviews with rating 1 = {{ ml_results[1]}} </i>
+        </p>
+        <p style="font-size: 32px;justify-content: center;"> <i>
+            Total number of reviews with rating 2 = {{ ml_results[2]}} </i>
+        </p>
+        <p style="font-size: 32px; justify-content: center;"> 
+            <i>Total number of reviews with rating 3 = {{ ml_results[3] }} </i>
+        </p>
+        <p style="font-size: 32px; justify-content: center;"> 
+            <i>Total number of reviews with rating 4 = {{ ml_results[4] }} </i>
+        </p>
+        <p style="font-size: 32px; justify-content: center;"> 
+            <i>Total number of reviews with rating 5 = {{ ml_results[5] }} </i>
+        </p>
+        <div style="justify-content: right; padding-left: 700px;">
+            <img src="static/star.png" alt="Your Logo" width=400px height=auto>
+        </div>
+
+    </div>
+</body>
+</html>
