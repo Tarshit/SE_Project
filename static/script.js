@@ -20,6 +20,7 @@ function allowDrop(event) {
 
 function handleDrop(event) {
     event.preventDefault();
+    event.preventDefault();
     const dragAndDropArea = document.getElementById("drag-and-drop-area");
     dragAndDropArea.classList.remove("drag-over");
 
