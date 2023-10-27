@@ -4,9 +4,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (content) {
         if (content.startsWith("data:text/csv")) {
-            const contentDisplay = document.getElementById("file-content");
-            contentDisplay.innerText = content;
+            const csvContent = atob(content.split(',')[1]);
+            displayContent(csvContent);
         } else {
+            const binaryContent = atob(content.split(',')[1]); 
             const workbook = XLSX.read(binaryContent, { type: 'binary' });
             const firstSheetName = workbook.SheetNames[0];
             const sheet = workbook.Sheets[firstSheetName];
