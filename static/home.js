@@ -15,6 +15,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    fileInput.addEventListener("change", function (e) {  
+        handleFileUpload(e.target.files[0]);
+    });
+
     // Add a drag-and-drop event listener to the drag-and-drop area
     dragAndDropArea.addEventListener("dragover", function (e) {
         e.preventDefault();
@@ -25,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
         dragAndDropArea.classList.remove("drag-over");
     });
 
-    dragAndDropArea.addEventListener("drop", function (e) {
+    dragAndDropArea.addEventListener("drop", function () { 
         e.preventDefault();
         dragAndDropArea.classList.remove("drag-over");
         handleFileUpload(e.dataTransfer.files[0]);
