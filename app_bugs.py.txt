@@ -1,0 +1,248 @@
+from flask import Flask, render_template, request, redirect, url_for, json, jsonify, Response, send_file, make_response
+import os
+import io
+import openpyxl
+from zipfile import BadZipFile
+import csv
+import warnings
+warnings.filterwarnings('ignore')
+import random
+import numpy as np
+import pandas as pd
+from sklearn import svm
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+from sklearn.feature_extraction.text import CountVectorizer
+import joblib
+import pickle
+from collections import Counter
+import matplotlib.pyplot as plt
+import json
+from reportlab.lib.pagesizes import letter, landscape
+from reportlab.pdfgen import canvas
+import io
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+import matplotlib.pyplot as plt
+import matplotlib.backends.backend_pdf
+from PyPDF2 import PdfWriter, PdfReader
+from io import BytesIO
+from PyPDF2 import PdfMerger
+import pdfkit
+from weasyprint import HTML
+pdfkit_config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
+
+
+app = Flask(__name__)
+
+# Set the upload directory
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Ensure the upload directory exists
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+@app.route('/')
+def home():
+    return render_template('home.html')
+
+@app.route('/upload_file', methods=['POST'])
+def upload_file():
+    file = request.files['file']
+    content = file.read().decode("utf-8")
+    
+
+    if file:
+        file_extension = file.filename.split('.')[-1].lower()
+        
+        if file_extension == 'xlsx':
+            try:
+                content_data = read_xlsx(file)
+            except BadZipFile:
+                content_data = "Invalid XLSX file"
+        elif file_extension == 'csv':
+            content_data = read_csv(file)
+        else:
+            content_data = "Unsupported file format"
+
+        # Save the uploaded file
+        if file_extension in ['xlsx', 'csv']:
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
+        #save_path = 'uploads/vsmall_file_1.csv'
+        with open('uploads/vsmall_file_1.csv', "w") as f:
+            f.write(content)
+        
+        return redirect(url_for('content', data=content))
+    return redirect(url_for('home'))
+
+def read_xlsx(file):
+    try:
+        workbook = openpyxl.load_workbook(io.BytesIO(file.read()))
+        sheet = workbook.active
+
+        data = []
+        for row in sheet.iter_rows(values_only=True):
+            data.append(','.join(map(str, row)))
+
+        return '\n'.join(data)
+    except BadZipFile:
+        raise BadZipFile("Invalid XLSX file")
+
+def read_csv(file):
+    try:
+        data = file.read().decode('utf-8')
+        return data
+    except UnicodeDecodeError:
+        return "Invalid CSV file"
+
+@app.route('/content')
+def content():
+    content_data = request.args.get('data', '')
+    return render_template('content.html', content=content_data)
+
+# Add a route to serve reviews.html
+def systematic_sampling(df, step):
+    indexes = np.arange(0, len(df), step=step)
+    systematic_sample = df.iloc[indexes]
+    return systematic_sample
+
+def ml():
+    reviews=pd.read_csv('test.csv',names=['ratings','title','review'])
+    
+    reviews_subset=systematic_sampling(reviews,100)
+
+    reviews_subset=reviews_subset.reset_index(drop='index')
+
+    reviews_subset['sentiment']=''
+    for i in reviews_subset.index:
+        if reviews_subset.loc[i,'ratings']==2:
+            reviews_subset.loc[i,'sentiment']='POSITIVE'
+        else:
+            reviews_subset.loc[i,'sentiment']='NEGATIVE'
+
+    reviews_subset['review']=reviews_subset['title']+reviews_subset['review']
+
+    reviews_subset=reviews_subset.drop('title',axis='columns')
+
+    reviews_subset=reviews_subset.dropna()
+
+    x_train,x_test,y_train,y_test=train_test_split(reviews_subset['review'],reviews_subset['sentiment'],test_size=0.25)
+
+    cv=CountVectorizer()
+    x_train_cv=cv.fit_transform(x_train.values)
+    x_test_cv=cv.transform(x_test.values)
+
+    models=svm.SVC(C=1000,kernel='sigmoid',gamma='auto')
+    models.fit(x_train_cv,y_train)
+
+    test = pd.read_csv('uploads/vsmall_file_1.csv',names=['ratings','title','review'])
+    t = test['review'].tolist()
+    c = cv.transform(t)
+    Pos_count = 0
+    Neg_count = 0
+    for i in c:
+        x = models.predict(i)
+        if x == "POSITIVE":
+            Pos_count = Pos_count+1
+        else:
+            Neg_count = Neg_count+1 
+    ml_result = [Pos_count+Neg_count, Pos_count, Neg_count]
+    return ml_result
+    
+@app.route('/reviews')
+def reviews():
+    ml_results = ml()
+    return render_template('reviews.html', ml_results=ml_results)
+
+def rating_classification():
+    test = pd.read_csv('uploads/vsmall_file_1.csv',names=['ratings','title','review'])
+    t = test['ratings'].tolist()
+    return Counter(t)
+
+@app.route('/ratings')
+def ratings():
+    ml_results = rating_classification()  # Implement a function to load your results
+    return render_template('ratings.html', ml_results=ml_results)
+    #return render_template('ratings.html')
+
+@app.route('/get_chart_data', methods=['GET'])
+def get_chart_data():
+    # Fetch or generate the data for the chart (e.g., from your machine learning model)
+    ml_re = ml()
+    data = {
+        'labels': ["positive", "negative"],
+        'values': [ml_re[1], ml_re[2]]
+    }
+    response =  jsonify(data)
+    response.headers['Content-Type'] = 'application/json'
+    return response
+
+@app.route('/barchart')
+def barchart():
+    return render_template('barchart.html')
+
+@app.route('/get_pie_chart_data', methods=['GET'])
+def get_pie_chart_data():
+    ml_results = ml()
+    # Fetch or generate the data for the pie chart
+    pie_data = {
+        'labels': ['Positive', 'Negative'],
+        'values': [ml_results[1], ml_results[2]]
+    }
+    response = jsonify(pie_data)
+    response.headers['Content-Type'] = 'application/json'
+    return response
+
+@app.route('/piechart')
+def piechart():
+    return render_template('piechart.html')
+
+def generate_pdfs(content, filename):
+    pdf = HTML(string=content).write_pdf()
+    with open(filename, 'wb') as f:
+        f.write(pdf)
+
+def reviews_pdf():
+    ml_results = ml()
+    html_content = render_template('reviews.html', ml_results=ml_results)
+    generate_pdfs(html_content, 'reviews.pdf')
+
+def ratings_pdf():
+    ml_results = rating_classification()
+    html_content = render_template('ratings.html', ml_results=ml_results)
+    generate_pdfs(html_content, 'ratings.pdf')
+
+def barchart_pdf():
+    html_content = render_template('barchart.html')
+    generate_pdfs(html_content, 'barchart.pdf')
+
+def piechart_pdf():
+    html_content = render_template('piechart.html')
+    generate_pdfs(html_content, 'piechart.pdf')
+
+@app.route('/download_report')
+def download_report():
+    reviews_pdf()
+    ratings_pdf()
+    barchart_pdf()
+    piechart_pdf()
+
+    # Combine all PDFs into one
+    pdfs = ['reviews.pdf', 'ratings.pdf', 'barchart.pdf', 'piechart.pdf']
+
+    combined_pdf = io.BytesI0()
+    
+    pdf_merger = PdfMerger()
+    
+    for pdf in pdfs:
+        pdf_merger.append(pdf)
+    
+    pdf_merger.write(combined_pdf)
+    pdf_merger.close()
+
+    # Serve the combined PDF for download
+    combined_pdf.seek(1)
+    return send_file(combined_pdf, as_attachment=True, download_name='combined_report.pdf')
+
+if __name__ == '__main__':
+    app.run(debug=True)
