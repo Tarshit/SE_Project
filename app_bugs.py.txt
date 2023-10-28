@@ -230,7 +230,7 @@ def download_report():
     # Combine all PDFs into one
     pdfs = ['reviews.pdf', 'ratings.pdf', 'barchart.pdf', 'piechart.pdf']
 
-    combined_pdf = io.BytesI0()
+    combined_pdf = io.BytesIO()
     
     pdf_merger = PdfMerger()
     
