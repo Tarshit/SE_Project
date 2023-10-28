@@ -5,6 +5,7 @@ function handleFileUpload(event) {
 
         reader.onload = function (e) {
             const content = e.target.result;
+            // Redirect to the content page with the file data as a URL parameter
             window.location.href = `content.html?data=${encodeURIComponent({{ url_for('content')}})}`;
         };
 
@@ -20,12 +21,11 @@ function allowDrop(event) {
 
 function handleDrop(event) {
     event.preventDefault();
-    event.preventDefault();
     const dragAndDropArea = document.getElementById("drag-and-drop-area");
     dragAndDropArea.classList.remove("drag-over");
 
     const file = event.dataTransfer.files[0];
-    handleFileUpload(file);
+    handleFileUpload({ target: { files: [file] } });
 }
 
 document.addEventListener("DOMContentLoaded", function () {
