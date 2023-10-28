@@ -98,8 +98,7 @@ def read_csv(file):
 @app.route('/content')
 def content():
     content_data = request.args.get('data', '')
-    return render_template('content.html', content="\n".join(content_data))
-
+    return render_template('content.html', content=content_data)
 
 # Add a route to serve reviews.html
 def systematic_sampling(df, step):
@@ -206,20 +205,20 @@ def generate_pdf(content, filename):
 def reviews_pdf():
     ml_results = ml()
     html_content = render_template('reviews.html', ml_results=ml_results)
-    generate_pdf(content=html_content, filename='reviews.pdf') 
+    generate_pdf(html_content, 'reviews.pdf')
 
 def ratings_pdf():
     ml_results = rating_classification()
     html_content = render_template('ratings.html', ml_results=ml_results)
-    generate_pdf(content=html_content, filename='ratings.pdf') 
+    generate_pdf(html_content, 'ratings.pdf')
 
 def barchart_pdf():
     html_content = render_template('barchart.html')
-    generate_pdf(content=html_content, filename='barchart.pdf')  
+    generate_pdf(html_content, 'barchart.pdf')
 
 def piechart_pdf():
     html_content = render_template('piechart.html')
-    generate_pdfs(content=html_content, filename='piechart.pdf')  
+    generate_pdf(html_content, 'piechart.pdf')
 
 @app.route('/download_report')
 def download_report():
@@ -242,7 +241,8 @@ def download_report():
     pdf_merger.close()
 
     # Serve the combined PDF for download
-    combined_pdf.seek(1)  # Introducing a bug    return send_file(combined_pdf, as_attachment=True, download_name='combined_report.pdf')
+    combined_pdf.seek(0)
+    return send_file(combined_pdf, as_attachment=True, download_name='combined_report.pdf')
 
 if __name__ == '__main__':
     app.run(debug=True)
