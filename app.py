@@ -107,7 +107,7 @@ def systematic_sampling(df, step):
     return systematic_sample
 
 def ml():
-    reviews=pd.read_csv('test.csv',names=['ratings','title','review'])
+    reviews=pd.read_csv('vsmall_file_1.csv',names=['ratings','title','review'])
     
     reviews_subset=systematic_sampling(reviews,100)
 
