@@ -4,7 +4,7 @@
     <style>
         /* Add custom CSS for the header */
         header {
-            background-color: #e5e7d1; /* Set the background color to match the buttons' color in the home page */
+            background-color: #d5d9a8; /* Set the background color to match the buttons' color in the home page */
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -69,6 +69,7 @@
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
             text-align: left; /* Align dropdown content to the left */
             top: 100%; /* Position below the dropdown item */
+            background-color: #d0d39f;
         }
 
         .dropdown:hover .dropdown-content {
@@ -85,7 +86,7 @@
         }
 
         body {
-            background-color: #a7bcad; /* Set the background color to match the home page */
+            background-color: #ffffff; /* Set the background color to match the home page */
             padding-top: 80px; /* Adjust padding to account for the header height */
             overflow-x: hidden; /* Hide horizontal scrollbar */
         }
@@ -110,7 +111,7 @@
     <div class="header-container">
         <header>
             <div class="logo-container">
-                <img src="static/logo.png" alt="Your Logo" class="logo">
+                <img src="../static/logo.png" alt="Your Logo" class="logo">
             </div>
             <ul class="tabs">
                 <li class="dropdown">
@@ -127,8 +128,24 @@
                         <a href="{{ url_for('piechart')}}">Pie Chart</a>
                     </div>
                 </li>
-                <li><a href="#compare">Compare</a></li>
-                <li><a href="#product-feedback">Product Feedback</a></li>
+                <li class="dropdown">
+                    <a href="#compare">LDA Analysis</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('positivewordcloud')}}">Word Cloud For Positive</a>
+                        <a href="{{ url_for('negativewordcloud')}}">Wordcloud for negative</a>
+                        <a href="{{ url_for('lda5')}}">LDA Topic Modeling with 5 Topics</a>
+                        <a href="{{ url_for('lda10')}}">LDA Topic Modeling with 10 Topics</a>
+                        <a href="{{ url_for('lda15')}}">LDA Topic Modeling with 15 Topics</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="#product-feedback">Bert Topic Modeling</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('bertbargraph')}}">bargraph</a>
+                        <a href="{{ url_for('clusters')}}">clusters</a>
+                        <a href="{{ url_for('hierarchy')}}">hierarchy</a>
+                    </div> 
+                </li>
                 <li><a href="#feedback">Feedback</a></li>
                 <li><a href="{{ url_for('download_report') }}" target="_blank">Download</a></li>
             </ul>
@@ -166,8 +183,8 @@
                         datasets: [{
                             label: 'Data',
                             data: data.values,
-                            backgroundColor: ['green', 'red'],  // Specify colors here
-                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: ['#DAF7A6', '#DC143C'],  // Specify colors here
+                            borderColor: 'rgb(74, 4, 4)',
                             borderWidth: 1
                         }]
                     },

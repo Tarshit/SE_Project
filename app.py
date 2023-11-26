@@ -30,7 +30,7 @@ from io import BytesIO
 from PyPDF2 import PdfMerger
 import pdfkit
 from weasyprint import HTML
-pdfkit_config = pdfkit.configuration(wkhtmltopdf='/usr/local/bin/wkhtmltopdf')
+
 
 
 app = Flask(__name__)
@@ -44,7 +44,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('home.html')
 
 @app.route('/upload_file', methods=['POST'])
 def upload_file():
@@ -244,5 +244,36 @@ def download_report():
     combined_pdf.seek(0)
     return send_file(combined_pdf, as_attachment=True, download_name='combined_report.pdf')
 
+@app.route('/positivewordcloud')
+def positivewordcloud():
+    return render_template('positive.html')
+
+@app.route('/negativewordcloud')
+def negativewordcloud():
+    return render_template('negative.html')
+
+@app.route('/bertbargraph')
+def bertbargraph():
+    return render_template('bert_bargraph.html')
+
+@app.route('/clusters')
+def clusters():
+    return render_template('clusters.html')
+
+@app.route('/hierarchy')
+def hierarchy():
+    return render_template('hierarchy.html')
+
+@app.route('/lda5')
+def lda5():
+    return render_template('ldavis_prepared_5_my.html')
+
+@app.route('/lda10')
+def lda10():
+    return render_template('ldavis_prepared_10.html')
+
+@app.route('/lda15')
+def lda15():
+    return render_template('ldavis_prepared_15.html')
 if __name__ == '__main__':
     app.run(debug=True)

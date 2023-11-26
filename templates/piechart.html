@@ -4,7 +4,7 @@
     <style>
         /* Add custom CSS for the header */
         header {
-            background-color: #e5e7d1; /* Set the background color to match the buttons' color in the home page */
+            background-color: #d5d9a8; /* Set the background color to match the buttons' color in the home page */
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -69,10 +69,23 @@
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
             text-align: left; /* Align dropdown content to the left */
             top: 100%; /* Position below the dropdown item */
+            background-color: #d0d39f;
         }
 
         .dropdown:hover .dropdown-content {
             display: block;
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 15px; /* Add 15px of padding to each item */
+            text-decoration: none;
+            display: block;
+            font-weight: normal;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #c0c2a7;
         }
 
         .header-container {
@@ -85,7 +98,7 @@
         }
 
         body {
-            background-color: #a7bcad; /* Set the background color to match the home page */
+            background-color: #ffffff; /* Set the background color to match the home page */
             padding-top: 80px; /* Adjust padding to account for the header height */
             overflow-x: hidden; /* Hide horizontal scrollbar */
         }
@@ -93,12 +106,10 @@
         .page-container {
             padding: 20px; /* Add padding to separate content from the header */
             z-index: -1;
-            padding-left: 200px;
-            padding-top: 10px;
         }
 
         #file-content {
-            background-color: #a7bcad; /* Set content background color to match the home page */
+            background-color: #ffffff; /* Set content background color to match the home page */
             padding: 20px;
             border-radius: 5px;
             text-align: center; /* Center-align the content */
@@ -109,7 +120,7 @@
     <div class="header-container">
         <header>
             <div class="logo-container">
-                <img src="static/logo.png" alt="Your Logo" class="logo">
+                <img src="../static/logo.png" alt="Your Logo" class="logo">
             </div>
             <ul class="tabs">
                 <li class="dropdown">
@@ -126,12 +137,27 @@
                         <a href="{{ url_for('piechart')}}">Pie Chart</a>
                     </div>
                 </li>
-                <li><a href="#compare">Compare</a></li>
-                <li><a href="#product-feedback">Product Feedback</a></li>
+                <li class="dropdown">
+                    <a href="#compare">LDA Analysis</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('positivewordcloud')}}">Word Cloud For Positive</a>
+                        <a href="{{ url_for('negativewordcloud')}}">Wordcloud for negative</a>
+                        <a href="{{ url_for('lda5')}}">LDA Topic Modeling with 5 Topics</a>
+                        <a href="{{ url_for('lda10')}}">LDA Topic Modeling with 10 Topics</a>
+                        <a href="{{ url_for('lda15')}}">LDA Topic Modeling with 15 Topics</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="#product-feedback">Bert Topic Modeling</a>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('bertbargraph')}}">bargraph</a>
+                        <a href="{{ url_for('clusters')}}">clusters</a>
+                        <a href="{{ url_for('hierarchy')}}">hierarchy</a>
+                    </div> 
+                </li>
                 <li><a href="#feedback">Feedback</a></li>
                 <li><a href="{{ url_for('download_report') }}" target="_blank">Download</a></li>
             </ul>
-            
         </header>
     </div>
     <div class="page-container" style="width: auto; height: auto;">
@@ -168,12 +194,12 @@
                         labels: data.labels,
                         datasets: [{
                             data: data.values,
-                            backgroundColor: ['green', 'red'],
+                            backgroundColor: ['#DAF7A6', '#DC143C'],
                             borderWidth: 1
                         }]
                     },
                     options: {
-                        maintainAspectRatio: true,
+                        maintainAspectRatio: false,
                         responsive: false
     }
                 });

@@ -11,6 +11,8 @@ function handleFileUpload(event) {
 
         reader.readAsDataURL(file);
     }
+    if (!file){
+        return
 }
 
 function allowDrop(event) {
